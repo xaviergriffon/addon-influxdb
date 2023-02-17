@@ -4,6 +4,7 @@
 # Runs the Kapacitor Server
 # ==============================================================================
 declare secret
+declare influx_ping
 
 # Wait for InfluxDB to become available
 s6-svwait -u -t 5000 /run/service//influxdb
@@ -13,11 +14,8 @@ secret=$(</data/secret)
 # Wait for InfluxDB...
 bashio::log.info "Kapacitor is waiting until InfluxDB is available..."
 for i in {1800..0}; do
-    if influx \
-        -execute "SHOW DATABASES" \
-        -username "kapacitor" \
-        -password "${secret}" \
-        > /dev/null 2>&1; then
+    influx_ping=$(influx ping)
+    if [ $influx_ping = "OK" ]; then
         break;
     fi
     sleep 5

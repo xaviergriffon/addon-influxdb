@@ -4,6 +4,7 @@
 # Ensure a user for Chronograf & Kapacitor exists within InfluxDB
 # ==============================================================================
 declare secret
+declare influx_ping
 
 # If secret file exists, skip this script
 if bashio::fs.file_exists "/data/secret"; then
@@ -18,7 +19,8 @@ exec 3< <(influxd)
 sleep 3
 
 for i in {1800..0}; do
-    if influx -execute "SHOW DATABASES" > /dev/null 2>&1; then
+    influx_ping=$(influx ping)
+    if [ $influx_ping = "OK" ]; then
         break;
     fi
     bashio::log.info "InfluxDB init process in progress..."
@@ -28,29 +30,13 @@ done
 if [[ "$i" = 0 ]]; then
     bashio::exit.nok "InfluxDB init process failed."
 fi
-
-influx -execute \
-    "CREATE USER chronograf WITH PASSWORD '${secret}'" \
-         &> /dev/null || true
-
-influx -execute \
-    "SET PASSWORD FOR chronograf = '${secret}'" \
-         &> /dev/null || true
-
-influx -execute \
-    "GRANT ALL PRIVILEGES TO chronograf" \
+influx setup -u homeassistant -p ${secret} -o homeassistant -b homeassistant -r 0 -f \
         &> /dev/null || true
 
-influx -execute \
-    "CREATE USER kapacitor WITH PASSWORD '${secret}'" \
+influx user create -n chronograf -p ${secret} -o homeassistant \
         &> /dev/null || true
 
-influx -execute \
-    "SET PASSWORD FOR kapacitor = '${secret}'" \
-        &> /dev/null || true
-
-influx -execute \
-    "GRANT ALL PRIVILEGES TO kapacitor" \
+influx user create -n kapacitor -p ${secret} -o homeassistant \
         &> /dev/null || true
 
 kill "$(pgrep influxd)" >/dev/null 2>&1
