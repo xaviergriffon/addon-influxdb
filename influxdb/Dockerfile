@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:6.0.0
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:stable
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -11,9 +11,9 @@ ARG BUILD_ARCH=amd64
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        libnginx-mod-http-lua=1.18.0-6.1 \
+        libnginx-mod-http-lua=1.18.0-6.1+deb11u3 \
         luarocks=2.4.2+dfsg-1.1 \
-        nginx=1.18.0-6.1 \
+        nginx=1.18.0-6.1+deb11u3 \
         procps=2:3.3.17-5 \
     \
     && luarocks install lua-resty-http 0.15-0 \
@@ -22,9 +22,12 @@ RUN \
     && if [ "${BUILD_ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
     && if [ "${BUILD_ARCH}" = "armv7" ]; then ARCH="armhf"; fi \
     \
-    && INFLUXDB="1.8.10" \
+    && INFLUXDB="2.6.1" \
     && curl -J -L -o /tmp/influxdb.deb \
-        "https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB}_${ARCH}.deb" \
+        "https://dl.influxdata.com/influxdb/releases/influxdb2-${INFLUXDB}-${ARCH}.deb" \
+    \
+    && curl -J -L -o /tmp/influxdb-client.deb \
+        "https://dl.influxdata.com/influxdb/releases/influxdb2-client-${INFLUXDB}-${ARCH}.deb" \
     \
     && CHRONOGRAF="1.9.4" \
     && curl -J -L -o /tmp/chronograf.deb \
@@ -35,6 +38,7 @@ RUN \
         "https://dl.influxdata.com/kapacitor/releases/kapacitor_${KAPACITOR}_${ARCH}.deb" \
     \
     && dpkg --install /tmp/influxdb.deb \
+    && dpkg --install /tmp/influxdb-client.deb \
     && dpkg --install /tmp/chronograf.deb \
     && dpkg --install /tmp/kapacitor.deb \
     \

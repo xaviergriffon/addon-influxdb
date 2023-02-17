@@ -7,6 +7,7 @@
 declare -a options
 declare ingress_entry
 declare secret
+declare influx_ping
 
 # Wait for InfluxDB to become available
 s6-svwait -u -t 5000 /run/service//influxdb
@@ -19,11 +20,8 @@ secret=$(</data/secret)
 # Wait for InfluxDB...
 bashio::log.info "Chronograf is waiting until InfluxDB is available..."
 for i in {1800..0}; do
-    if influx \
-        -execute "SHOW DATABASES" \
-        -username "chronograf" \
-        -password "${secret}" \
-        > /dev/null 2>&1; then
+    influx_ping=$(influx ping)
+    if [ $influx_ping = "OK" ]; then
         break;
     fi
     sleep 5
