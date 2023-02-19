@@ -6,7 +6,7 @@
 
 bashio::var.json \
     reporting "^$(bashio::config 'reporting')" \
-    secret "$(</data/secret)"\
+    token "$(</data/token)"\
     | tempio \
         -template /etc/kapacitor/templates/kapacitor.gtpl \
         -out /etc/kapacitor/kapacitor.conf
