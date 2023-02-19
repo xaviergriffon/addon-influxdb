@@ -129,28 +129,21 @@ only exposed to your internal network. USE AT YOUR OWN RISK!_
 The `influxdb` integration of Home Assistant makes it possible to transfer all
 state changes to an InfluxDB database.
 
-You need to do the following steps in order to get this working:
+A notification informs you of the token generated for home assistant authentication.
 
-- Click on "OPEN WEB UI" to open the admin web-interface provided by this add-on.
-- On the left menu click on the "InfluxDB Admin".
-- Create a database for storing Home Assistant's data in, e.g., `homeassistant`.
-- Go to the users tab and create a user for Home Assistant,
-  e.g., `homeassistant`.
-- Add "ALL" to "Permissions" of the created user, to allow writing to your
-  database.
-
-Now we've got this in place, add the following snippet to your Home Assistant
-`configuration.yaml` file.
+Add the following snippet to your Home Assistant `configuration.yaml` file by indicating the token received.
 
 ```yaml
 influxdb:
-  host: a0d7b954-influxdb
+  host: localhost
   port: 8086
-  database: homeassistant
-  username: homeassistant
-  password: <yourpassword>
+  api_version: 2
+  organization: homeassistant
+  bucket: homeassistant/autogen
+  token: <ttoken received via notification>>
   max_retries: 3
   default_measurement: state
+  ssl: false
 ```
 
 Restart Home Assistant.
