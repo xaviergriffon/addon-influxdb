@@ -25,9 +25,11 @@ map:
 ports:
   80/tcp: null
   8086/tcp: 8086
+  22/tcp: 40022
 ports_description:
   80/tcp: Web interface (Not required for Ingress)
   8086/tcp: InfluxDB server
+  40022/tcp: SSH
 auth_api: true
 options:
   auth: true

@@ -8,6 +8,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Setup base system
 ARG BUILD_ARCH=amd64
 
+# Set Influxdbv2 configuration
+ENV INFLUXD_CONFIG_PATH /etc/influxdb/
+
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -15,6 +18,7 @@ RUN \
         luarocks=2.4.2+dfsg-1.1 \
         nginx=1.18.0-6.1+deb11u3 \
         procps=2:3.3.17-5 \
+        openssh-server \
     \
     && luarocks install lua-resty-http 0.15-0 \
     \
@@ -49,7 +53,9 @@ RUN \
         /var/lib/apt/lists/* \
     \
     && mkdir -p /var/log/nginx \
-    && touch /var/log/nginx/error.log
+    && touch /var/log/nginx/error.log \
+    && sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && service ssh start
 
 
 # Copy root filesystem
