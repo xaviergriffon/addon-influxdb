@@ -29,8 +29,11 @@ done
 if [[ "$i" = 0 ]]; then
     bashio::exit.nok "InfluxDB init process failed."
 fi
+
 influx setup -u homeassistant -p $secret -o homeassistant -b homeassistant/autogen -r 0 -f \
         &> /dev/null || true
+
+cp /root/.influxdbv2/configs /data/configs
 
 influx user create -n chronograf -o homeassistant \
         &> /dev/null || true
@@ -47,7 +50,9 @@ kill "$(pgrep influxd)" >/dev/null 2>&1
 echo "${secret}" > /data/secret
 echo "${token}" > /data/token
 
+echo -e "${secret}\n${secret}" | passwd root
+
 curl -sS -X "POST" "http://supervisor/core/api/services/notify/persistent_notification" \
   -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d "{\"title\": \"Token InfluxDB2\", \"message\": \"${token}\"}"
+  -d "{\"title\": \"Token InfluxDB2\", \"message\": \"${token} (${secret})\"}"

@@ -10,6 +10,9 @@ ARG BUILD_ARCH=amd64
 ARG INFLUXDB_VERSION="2.6.1"
 ARG CHRONOGRAF_VERSION="1.10.2"
 ARG KAPACITOR_VERSION="1.5.9-1"
+# Set Influxdbv2 configuration
+ENV INFLUXD_CONFIG_PATH /etc/influxdb/
+
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -17,6 +20,7 @@ RUN \
         luarocks=3.8.0+dfsg1-1 \
         nginx=1.22.1-9 \
         procps=2:4.0.2-3 \
+        openssh-server \
     \
     && luarocks install lua-resty-http 0.15-0 \
     \
@@ -48,7 +52,9 @@ RUN \
         /var/lib/apt/lists/* \
     \
     && mkdir -p /var/log/nginx \
-    && touch /var/log/nginx/error.log
+    && touch /var/log/nginx/error.log \
+    && sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && service ssh start
 
 
 # Copy root filesystem
