@@ -54,7 +54,7 @@ RUN \
     \
     && mkdir -p /var/log/nginx \
     && touch /var/log/nginx/error.log \
-    && sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && sed -i 's/#PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && service ssh start
 
 

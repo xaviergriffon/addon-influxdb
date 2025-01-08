@@ -1,0 +1,5 @@
+[default]
+  url = "http://localhost:8086"
+  token = "wsB3bE47cngHPKUGiOmHnHVkTX-eU8z0qGymVVWj0EFEPNaUhA6PH0xyeD0YZdpMrC5masMPuDWE0Ruq7NvWFA=="
+  org = "homeassistant"
+  active = true
