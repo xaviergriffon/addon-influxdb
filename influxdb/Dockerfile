@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:7.6.3
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base/amd64:stable
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -13,10 +13,13 @@ ARG KAPACITOR_VERSION="1.5.9-1"
 # Set Influxdbv2 configuration
 ENV INFLUXD_CONFIG_PATH /etc/influxdb/
 
+# Set Influxdbv2 configuration
+ENV INFLUXD_CONFIG_PATH /etc/influxdb/
+
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        libnginx-mod-http-lua=1:0.10.23-1 \
+        libnginx-mod-http-lua=1.18.0-6.1+deb11u3 \
         luarocks=3.8.0+dfsg1-1 \
         nginx=1.22.1-9 \
         procps=2:4.0.2-3 \
