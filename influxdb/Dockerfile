@@ -13,9 +13,6 @@ ARG KAPACITOR_VERSION="1.5.9-1"
 # Set Influxdbv2 configuration
 ENV INFLUXD_CONFIG_PATH /etc/influxdb/
 
-# Set Influxdbv2 configuration
-ENV INFLUXD_CONFIG_PATH /etc/influxdb/
-
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
