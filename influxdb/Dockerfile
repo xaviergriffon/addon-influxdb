@@ -7,18 +7,19 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Setup base system
 ARG BUILD_ARCH=amd64
-ARG INFLUXDB_VERSION="2.6.1"
-ARG CHRONOGRAF_VERSION="1.10.2"
-ARG KAPACITOR_VERSION="1.5.9-1"
+ARG INFLUXDB_VERSION="2.7.11-1"
+ARG INFLUXDB_CLIENT_VERSION="2.7.5"
+ARG CHRONOGRAF_VERSION="1.10.6"
+ARG KAPACITOR_VERSION="1.7.6-1"
 # Set Influxdbv2 configuration
 ENV INFLUXD_CONFIG_PATH /etc/influxdb/
 
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        libnginx-mod-http-lua=1.18.0-6.1+deb11u3 \
+        libnginx-mod-http-lua=1:0.10.23-1 \
         luarocks=3.8.0+dfsg1-1 \
-        nginx=1.22.1-9 \
+        nginx=1.22.1-9+deb12u1 \
         procps=2:4.0.2-3 \
         openssh-server \
     \
@@ -29,10 +30,10 @@ RUN \
     && if [ "${BUILD_ARCH}" = "armv7" ]; then ARCH="armhf"; fi \
     \
     && curl -J -L -o /tmp/influxdb.deb \
-        "https://dl.influxdata.com/influxdb/releases/influxdb2-${INFLUXDB_VERSION}-${ARCH}.deb" \
+        "https://dl.influxdata.com/influxdb/releases/influxdb2_${INFLUXDB_VERSION}_${ARCH}.deb" \
     \
     && curl -J -L -o /tmp/influxdb-client.deb \
-        "https://dl.influxdata.com/influxdb/releases/influxdb2-client-${INFLUXDB_VERSION}-${ARCH}.deb" \
+        "https://dl.influxdata.com/influxdb/releases/influxdb2-client-${INFLUXDB_CLIENT_VERSION}-${ARCH}.deb" \
     \
     && curl -J -L -o /tmp/chronograf.deb \
         "https://dl.influxdata.com/chronograf/releases/chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb" \
@@ -55,7 +56,6 @@ RUN \
     && touch /var/log/nginx/error.log \
     && sed -i 's/#PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && service ssh start
-
 
 # Copy root filesystem
 COPY rootfs /
